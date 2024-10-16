@@ -12,6 +12,11 @@ from pathlib import Path
 from os.path import dirname, realpath
 
 import subprocess
+import time
+import signal
+import os
+import shlex
+import pandas as pd
 
 class RunnerConfig:
     ROOT_DIR = Path(dirname(realpath(__file__)))
@@ -59,7 +64,7 @@ class RunnerConfig:
         self.run_table_model = RunTableModel(
             factors=[technique_factor],
             repetitions=1,
-            data_columns=['avg_cpu', 'avg_mem', 'total_energy', 'execution_time']
+            data_columns=['total_energy', 'execution_time']
         )
         return self.run_table_model
 
@@ -80,45 +85,62 @@ class RunnerConfig:
         For example, starting the target system to measure.
         Activities after starting the run should also be performed here."""
 
-        target_file = context.run_variation['technique'] + '.py'
-
-        self.target = subprocess.Popen(['python3', target_file],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=self.ROOT_DIR,
-        )
+        if context.run_variation['technique'] == 'mpi':
+            target_file = 'mpi.py'
+            self.target = subprocess.Popen(['mpirun', '-np', '4', 'python3', target_file],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=self.ROOT_DIR,
+            )
+        else:
+            target_file = context.run_variation['technique'] + '.py'
+            self.target = subprocess.Popen(['python3', target_file],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=self.ROOT_DIR,
+            )
 
     def start_measurement(self, context: RunnerContext) -> None:
         """Perform any activity required for starting measurements."""
-        output.console_log("Config.start_measurement() called!")
+
+        profiler_cmd = f'powerjoular -l -p {self.target.pid} -f {context.run_dir / "powerjoular.csv"}'
+
+        time.sleep(0.2) # allow the process to run a little before measuring
+        self.profiler = subprocess.Popen(shlex.split(profiler_cmd))
 
     def interact(self, context: RunnerContext) -> None:
         """Perform any interaction with the running target system here, or block here until the target finishes."""
 
-        output.console_log("Config.interact() called!")
+        self.target.wait()
 
     def stop_measurement(self, context: RunnerContext) -> None:
         """Perform any activity here required for stopping measurements."""
 
-        output.console_log("Config.stop_measurement called!")
+        os.kill(self.profiler.pid, signal.SIGINT) # graceful shutdown of powerjoular
+        self.profiler.wait()
 
     def stop_run(self, context: RunnerContext) -> None:
         """Perform any activity here required for stopping the run.
         Activities after stopping the run should also be performed here."""
 
-        output.console_log("Config.stop_run() called!")
+        pass
 
     def populate_run_data(self, context: RunnerContext) -> Optional[Dict[str, SupportsStr]]:
         """Parse and process any measurement data here.
         You can also store the raw measurement data under `context.run_dir`
         Returns a dictionary with keys `self.run_table_model.data_columns` and their values populated"""
 
-        output.console_log("Config.populate_run_data() called!")
-        return None
+        df = pd.read_csv(context.run_dir / f"powerjoular.csv-{self.target.pid}.csv")
+        execution_time = self.target.stdout.readline().decode('ascii').strip()
+
+        run_data = {
+            'total_energy': round(df['CPU Power'].sum(), 3),
+            'execution_time': round(execution_time, 3)
+        }
+
+        return run_data
 
     def after_experiment(self) -> None:
         """Perform any activity required after stopping the experiment here
         Invoked only once during the lifetime of the program."""
 
-        output.console_log("Config.after_experiment() called!")
+        pass
 
     # ================================ DO NOT ALTER BELOW THIS LINE ================================
     experiment_path:            Path             = None
