@@ -1,3 +1,5 @@
+# mpirun -np 4 python3 mpi.py
+
 import numpy as np
 import time
 from mpi4py import MPI
@@ -12,11 +14,11 @@ def memory_bound_task(matrix):
             matrix[i][j] *= 1.01
 
 if __name__ == '__main__':
+    matrix_size = 5000
+
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     size = comm.Get_size()
-
-    matrix_size = 10000
 
     if rank == 0:
         matrix = np.random.rand(matrix_size, matrix_size)

@@ -10,12 +10,12 @@ def memory_bound_task(start_row, end_row, matrix):
     return
 
 if __name__ == '__main__':
-    matrix_size = 10000
+    start_time = time.time()
+
+    matrix_size = 5000
     matrix = np.random.rand(matrix_size, matrix_size)
 
     job_server = pp.Server()
-
-    start_time = time.time()
 
     num_processes = 4
     rows_per_process = matrix_size // num_processes

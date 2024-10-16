@@ -2,7 +2,9 @@ import numpy as np
 import time
 import threading
 
-matrix_size = 10000
+start_time = time.time()
+
+matrix_size = 5000
 matrix = np.random.rand(matrix_size, matrix_size)
 
 def memory_bound_task(start_row, end_row):
@@ -11,8 +13,6 @@ def memory_bound_task(start_row, end_row):
     for i in range(start_row, end_row):
         for j in range(cols):
             matrix[i][j] = matrix[i][j] * 1.01
-
-start_time = time.time()
 
 threads = []
 num_threads = 4

@@ -2,7 +2,7 @@ import numpy as np
 import time
 from multiprocessing import Process, Array
 
-matrix_size = 10000
+matrix_size = 5000
 
 def memory_bound_task(matrix, start_row, end_row):
     matrix_np = np.frombuffer(matrix.get_obj()).reshape((matrix_size, matrix_size))
@@ -13,13 +13,13 @@ def memory_bound_task(matrix, start_row, end_row):
             matrix_np[i][j] *= 1.01
 
 if __name__ == '__main__':
+    start_time = time.time()
+
     matrix = Array('d', matrix_size * matrix_size)
     matrix_np = np.frombuffer(matrix.get_obj()).reshape((matrix_size, matrix_size))
 
     np.random.seed(0)
     matrix_np[:] = np.random.rand(matrix_size, matrix_size)
-
-    start_time = time.time()
 
     processes = []
     num_processes = 4
