@@ -2,7 +2,7 @@ import random
 import time
 
 # n*n matrix
-MATRIX_SIZE = 2
+MATRIX_SIZE = 200
 MATRIX_VALUE_MIN = -10
 MATRIX_VALUE_MAX = 10
 
@@ -34,9 +34,6 @@ start_time = time.time()
 result_matrix = multiply_matrices(matrix_a, matrix_b)
 elapsed_time = time.time() - start_time
 
-# Displaying matrices and the result
-display_matrix(matrix_a, "Matrix A")
-display_matrix(matrix_b, "Matrix B")
-display_matrix(result_matrix, "Result Matrix (A x B)")
+
 
 print(f"Elapsed time for matrix multiplication: {elapsed_time:.6f} seconds")
