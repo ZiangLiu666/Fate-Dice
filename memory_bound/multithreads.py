@@ -30,4 +30,4 @@ for thread in threads:
 
 end_time = time.time()
 
-print(end_time - start_time)
+print((end_time - start_time)*1000)

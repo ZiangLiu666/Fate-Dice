@@ -37,4 +37,4 @@ if __name__ == '__main__':
 
     end_time = time.time()
 
-    print(end_time - start_time)
+    print((end_time - start_time)*1000)

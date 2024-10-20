@@ -131,7 +131,7 @@ class RunnerConfig:
 
         run_data = {
             'total_energy': round(df['CPU Power'].sum(), 3),
-            'execution_time': round(execution_time, 3)
+            'execution_time': round(execution_time, 2)
         }
 
         return run_data

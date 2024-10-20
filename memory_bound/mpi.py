@@ -42,5 +42,5 @@ if __name__ == '__main__':
         comm.Send(matrix[start_row:end_row], dest=0)
 
     if rank == 0:
-        print(end_time - start_time)
+        print((end_time - start_time)*1000)
 
