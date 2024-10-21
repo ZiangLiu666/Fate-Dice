@@ -12,7 +12,7 @@ def memory_bound_task(start_row, end_row, matrix):
 if __name__ == '__main__':
     start_time = time.time()
 
-    matrix_size = 2400
+    matrix_size = 3200
     matrix = np.random.rand(matrix_size, matrix_size)
 
     job_server = pp.Server()
