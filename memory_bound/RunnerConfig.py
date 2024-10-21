@@ -106,7 +106,7 @@ class RunnerConfig:
     def start_measurement(self, context: RunnerContext) -> None:
         """Perform any activity required for starting measurements."""
 
-        time.sleep(0.2)
+        time.sleep(1)
         self.pids = get_all_child_pids(self.target.pid)
         self.pids.append(self.target.pid)
         self.profilers = []

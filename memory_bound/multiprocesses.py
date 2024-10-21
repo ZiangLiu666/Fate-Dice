@@ -2,7 +2,7 @@ import numpy as np
 import time
 from multiprocessing import Process, Array
 
-matrix_size = 3200
+matrix_size = 8400
 
 def memory_bound_task(matrix, start_row, end_row):
     matrix_np = np.frombuffer(matrix.get_obj()).reshape((matrix_size, matrix_size))
