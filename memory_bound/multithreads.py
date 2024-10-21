@@ -4,7 +4,7 @@ import threading
 
 start_time = time.time()
 
-matrix_size = 5000
+matrix_size = 2400
 matrix = np.random.rand(matrix_size, matrix_size)
 
 def memory_bound_task(start_row, end_row):
