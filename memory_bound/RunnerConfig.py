@@ -109,6 +109,7 @@ class RunnerConfig:
         time.sleep(1)
         self.pids = get_all_child_pids(self.target.pid)
         self.pids.append(self.target.pid)
+        print("PIDs: ", self.pids)
         self.profilers = []
 
         for pid in self.pids:
