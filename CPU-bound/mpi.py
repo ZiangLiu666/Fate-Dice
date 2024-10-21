@@ -39,6 +39,6 @@ if __name__ == '__main__':
         comm.Gather(matrix, full_matrix, root=0)
         elapsed_time = time.time() - start_time
         
-        print(f"Elapsed time for matrix multiplication: {elapsed_time:.6f} seconds")
+        print(elapsed_time)
     else:
         comm.Gather(matrix, None, root=0)

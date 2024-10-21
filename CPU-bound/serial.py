@@ -36,4 +36,4 @@ elapsed_time = time.time() - start_time
 
 
 
-print(f"Elapsed time for matrix multiplication: {elapsed_time:.6f} seconds")
+print(elapsed_time)
