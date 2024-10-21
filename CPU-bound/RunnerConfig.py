@@ -98,7 +98,6 @@ class RunnerConfig:
     def stop_run(self, context: RunnerContext) -> None:
         pass
 
-
     def populate_run_data(self, context: RunnerContext) -> Optional[Dict[str, SupportsStr]]:
         """Gather and parse the run data for report generation."""
         total_energy = sum(pd.read_csv(context.run_dir / f"powerjoular.csv-{pid}.csv")['CPU Power'].sum() for pid in self.pids)
