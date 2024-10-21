@@ -67,7 +67,7 @@ class RunnerConfig:
     def create_run_table_model(self) -> RunTableModel:
         """Create and return the run_table model here. A run_table is a List (rows) of tuples (columns),
         representing each run performed"""
-        technique_factor = FactorModel("technique", ['multithreads', 'multiprocesses', 'pp', 'mpi'])
+        technique_factor = FactorModel("technique", ['multithreads', 'multiprocesses', 'ppm', 'mpi'])
         self.run_table_model = RunTableModel(
             factors=[technique_factor],
             repetitions=1,
