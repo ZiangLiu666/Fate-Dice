@@ -15,8 +15,15 @@ import subprocess
 import time
 import signal
 import os
+import psutil
 import shlex
 import pandas as pd
+
+def get_all_child_pids(pid):
+    parent = psutil.Process(pid)
+    children = parent.children(recursive=True)
+    child_pids = [child.pid for child in children]
+    return child_pids
 
 class RunnerConfig:
     ROOT_DIR = Path(dirname(realpath(__file__)))
@@ -99,10 +106,14 @@ class RunnerConfig:
     def start_measurement(self, context: RunnerContext) -> None:
         """Perform any activity required for starting measurements."""
 
-        profiler_cmd = f'powerjoular -l -p {self.target.pid} -f {context.run_dir / "powerjoular.csv"}'
+        self.pids = get_all_child_pids(self.target.pid)
+        self.pids.append(self.target.pid)
+        self.profilers = []
 
-        time.sleep(0.2) # allow the process to run a little before measuring
-        self.profiler = subprocess.Popen(shlex.split(profiler_cmd))
+        for pid in self.pids:
+            profiler_cmd = f'powerjoular -l -p {pid} -f {context.run_dir / "powerjoular.csv"}'
+            profiler = subprocess.Popen(shlex.split(profiler_cmd))
+            self.profilers.append(profiler)
 
     def interact(self, context: RunnerContext) -> None:
         """Perform any interaction with the running target system here, or block here until the target finishes."""
@@ -112,8 +123,9 @@ class RunnerConfig:
     def stop_measurement(self, context: RunnerContext) -> None:
         """Perform any activity here required for stopping measurements."""
 
-        os.kill(self.profiler.pid, signal.SIGINT) # graceful shutdown of powerjoular
-        self.profiler.wait()
+        for profiler in self.profilers:
+            os.kill(profiler.pid, signal.SIGINT) # graceful shutdown of powerjoular
+            profiler.wait()
 
     def stop_run(self, context: RunnerContext) -> None:
         """Perform any activity here required for stopping the run.
@@ -126,11 +138,14 @@ class RunnerConfig:
         You can also store the raw measurement data under `context.run_dir`
         Returns a dictionary with keys `self.run_table_model.data_columns` and their values populated"""
 
-        df = pd.read_csv(context.run_dir / f"powerjoular.csv-{self.target.pid}.csv")
+        total_energy = 0
+        for pid in self.pids:
+            df = pd.read_csv(context.run_dir / f"powerjoular.csv-{pid}.csv")
+            total_energy += round(df['CPU Power'].sum(), 3)
         execution_time = self.target.stdout.readline().decode('ascii').strip()
 
         run_data = {
-            'total_energy': round(df['CPU Power'].sum(), 3),
+            'total_energy': round(total_energy, 3),
             'execution_time': round(execution_time, 2)
         }
 
