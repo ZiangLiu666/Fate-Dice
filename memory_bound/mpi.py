@@ -14,7 +14,7 @@ def memory_bound_task(matrix):
             matrix[i][j] *= 1.01
 
 if __name__ == '__main__':
-    matrix_size = 8400
+    matrix_size = 4800
 
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()

@@ -106,7 +106,9 @@ class RunnerConfig:
     def start_measurement(self, context: RunnerContext) -> None:
         """Perform any activity required for starting measurements."""
 
-        time.sleep(2)
+        if context.run_variation['technique'] != 'multithreads':
+            while len(get_all_child_pids(self.target.pid)) != 4:
+                time.sleep(0.2)
         self.pids = get_all_child_pids(self.target.pid)
         self.pids.append(self.target.pid)
         print("PIDs: ", self.pids)
