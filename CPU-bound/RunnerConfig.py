@@ -41,7 +41,7 @@ class RunnerConfig:
         output.console_log("Custom CPU-bound config loaded")
 
     def create_run_table_model(self) -> RunTableModel:
-        technique_factor = FactorModel("technique", ['serial', 'multithreads', 'multiprocesses', 'mpi'])
+        technique_factor = FactorModel("technique", ['multithreads', 'multiprocesses', 'mpi','ppm'])
         self.run_table_model = RunTableModel(
             factors=[technique_factor],
             repetitions=1,

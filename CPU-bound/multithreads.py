@@ -40,4 +40,4 @@ if __name__ == '__main__':
 
     print("Result Matrix:")
     print(matrix)
-    print(f"Elapsed time for matrix multiplication: {elapsed_time:.6f} seconds")
+    print(elapsed_time)

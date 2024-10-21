@@ -40,10 +40,8 @@ def main():
     elapsed_time = time.time() - start_time
 
     # Print results
-    print("Matrix A:", matrix_a)
-    print("Matrix B:", matrix_b)
-    print("Result Matrix (A x B):", result_matrix)
-    print(f"Elapsed time for matrix multiplication: {elapsed_time:.6f} seconds")
+
+    print(elapsed_time)
 
     job_server.print_stats()
     job_server.destroy()
