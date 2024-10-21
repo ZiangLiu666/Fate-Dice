@@ -146,7 +146,7 @@ class RunnerConfig:
 
         run_data = {
             'total_energy': round(total_energy, 3),
-            'execution_time': round(execution_time, 2)
+            'execution_time': round(float(execution_time), 2)
         }
 
         return run_data
