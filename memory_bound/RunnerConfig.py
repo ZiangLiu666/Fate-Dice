@@ -71,7 +71,7 @@ class RunnerConfig:
         self.run_table_model = RunTableModel(
             factors=[technique_factor],
             repetitions=1,
-            data_columns=['total_energy', 'execution_time']
+            data_columns=['total_energy', 'execution_time', 'cpu_user_time', 'cpu_system_time', 'cpu_iowait_time', 'mem_usage']
         )
         return self.run_table_model
 
@@ -118,6 +118,14 @@ class RunnerConfig:
             profiler_cmd = f'powerjoular -l -p {pid} -f {context.run_dir / "powerjoular.csv"}'
             profiler = subprocess.Popen(shlex.split(profiler_cmd))
             self.profilers.append(profiler)
+        
+        self.cpumonitor = subprocess.Popen(['python3', 'cpumonitor.py'] + [str(pid) for pid in self.pids],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=self.ROOT_DIR,
+        )
+
+        self.memmonitor = subprocess.Popen(['python3', 'memmonitor.py'] + [str(pid) for pid in self.pids],
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=self.ROOT_DIR,
+        )
 
     def interact(self, context: RunnerContext) -> None:
         """Perform any interaction with the running target system here, or block here until the target finishes."""
@@ -127,6 +135,8 @@ class RunnerConfig:
     def stop_measurement(self, context: RunnerContext) -> None:
         """Perform any activity here required for stopping measurements."""
 
+        self.cpumonitor.wait()
+        self.memmonitor.wait()
         for profiler in self.profilers:
             os.kill(profiler.pid, signal.SIGINT) # graceful shutdown of powerjoular
             profiler.wait()
@@ -147,10 +157,18 @@ class RunnerConfig:
             df = pd.read_csv(context.run_dir / f"powerjoular.csv-{pid}.csv")
             total_energy += round(df['CPU Power'].sum(), 3)
         execution_time = self.target.stdout.readline().decode('ascii').strip()
+        cpu_user_time = self.cpumonitor.stdout.readline().decode('ascii').strip()
+        cpu_system_time = self.cpumonitor.stdout.readline().decode('ascii').strip()
+        cpu_iowait_time = self.cpumonitor.stdout.readline().decode('ascii').strip()
+        mem_usage = self.memmonitor.stdout.readline().decode('ascii').strip()
 
         run_data = {
             'total_energy': round(total_energy, 3),
-            'execution_time': round(float(execution_time), 2)
+            'execution_time': round(float(execution_time), 2),
+            'cpu_user_time': round(float(cpu_user_time), 2),
+            'cpu_system_time': round(float(cpu_system_time), 2),
+            'cpu_iowait_time': round(float(cpu_iowait_time), 2),
+            'mem_usage': round(float(mem_usage), 2)
         }
 
         return run_data
