@@ -46,6 +46,6 @@ if __name__ == "__main__":
         total_user_time += stats['user_time']
         total_system_time += stats['system_time']
         total_io_wait_time += stats['io_wait_time']
-    print(total_user_time)
-    print(total_system_time)
-    print(total_io_wait_time)
+    print(round(total_user_time, 2))
+    print(round(total_system_time, 2))
+    print(round(total_io_wait_time, 2))
