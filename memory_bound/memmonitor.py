@@ -73,5 +73,4 @@ if __name__ == "__main__":
     pid_list = [int(pid) for pid in sys.argv[1:]]
 
     avg_memory_usage = monitor_processes(pid_list)
-    print(f"平均内存使用量: {avg_memory_usage / (1024 ** 2):.2f} MB")
-    print(avg_memory_usage)
+    print(round(avg_memory_usage, 2))
