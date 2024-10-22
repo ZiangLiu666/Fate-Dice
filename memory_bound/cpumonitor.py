@@ -14,7 +14,7 @@ def monitor_processes(pid_list):
                 'io_wait_time': 0.0
             }
         except psutil.NoSuchProcess:
-            print(f"Process with PID {pid} does not exist.")
+            exit(f"Process {pid} does not exist.")
     
     # 持续监控每个进程，直到所有进程结束
     while pid_list:
@@ -29,7 +29,6 @@ def monitor_processes(pid_list):
                 process_stats[pid]['io_wait_time'] = cpu_times.iowait
             
             except psutil.NoSuchProcess:
-                print(f"Process {pid} has finished.")
                 pid_list.remove(pid)
 
         time.sleep(0.5)  # 每隔0.5秒更新一次
@@ -47,6 +46,6 @@ if __name__ == "__main__":
         total_user_time += stats['user_time']
         total_system_time += stats['system_time']
         total_io_wait_time += stats['io_wait_time']
-    print(f"Total user time: {total_user_time}")
-    print(f"Total system time: {total_system_time}")
-    print(f"Total I/O wait time: {total_io_wait_time}")
+    print(total_user_time)
+    print(total_system_time)
+    print(total_io_wait_time)
