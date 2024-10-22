@@ -1,5 +1,6 @@
 import psutil
 import time
+import sys
 
 def get_process_memory(pids):
     """获取给定pids列表中正在运行的进程的内存占用"""
@@ -42,8 +43,8 @@ def monitor_processes(pids):
 
 if __name__ == "__main__":
     # 示例PID列表
-    pid_list = [1234, 5678, 91011]  # 将这些PID替换为你要监控的进程ID
-    
+    pid_list = [int(pid) for pid in sys.argv[1:]]
+
     avg_memory_usage = monitor_processes(pid_list)
     print(f"平均内存使用量: {avg_memory_usage / (1024 ** 2):.2f} MB")
     print(avg_memory_usage)
