@@ -2,20 +2,41 @@ import psutil
 import time
 import sys
 
+# def get_process_memory(pids):
+#     """获取给定pids列表中正在运行的进程的内存占用"""
+#     total_memory = 0
+#     running_pids = []
+#     for pid in pids:
+#         try:
+#             p = psutil.Process(pid)
+#             if p.is_running():
+#                 mem_info = p.memory_info()
+#                 total_memory += mem_info.rss  # 以字节为单位
+#                 running_pids.append(pid)
+#         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+#             # 进程不存在或者访问被拒绝，忽略
+#             pass
+#     return total_memory, running_pids
+
 def get_process_memory(pids):
-    """获取给定pids列表中正在运行的进程的内存占用"""
+    """获取给定pids列表中正在运行的进程的PSS内存占用"""
     total_memory = 0
     running_pids = []
+    
     for pid in pids:
         try:
-            p = psutil.Process(pid)
-            if p.is_running():
-                mem_info = p.memory_info()
-                total_memory += mem_info.rss  # 以字节为单位
+            with open(f"/proc/{pid}/smaps", 'r') as f:
+                lines = f.readlines()
+                pss_memory = 0
+                for line in lines:
+                    if line.startswith("Pss:"):
+                        pss_memory += int(line.split()[1])  # 单位为KB
+                total_memory += pss_memory * 1024  # 转换为字节
                 running_pids.append(pid)
-        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+        except (FileNotFoundError, ProcessLookupError, PermissionError):
             # 进程不存在或者访问被拒绝，忽略
             pass
+    
     return total_memory, running_pids
 
 def monitor_processes(pids):
