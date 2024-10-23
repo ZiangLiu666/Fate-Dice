@@ -1,13 +1,19 @@
 import numpy as np
 import time
 
-def sum_random_numbers():
-    data = np.random.randint(low=1, high=100, size=1000000)
-    start_time = time.time()
-    total_sum = np.sum(data)
-    end_time = time.time()
-    print("Sum:", total_sum)
-    print((time.time() - start_time)*1000)
+num_elements = 10000000  # 10 million elements
 
-if __name__ == '__main__':
-    sum_random_numbers()
+def cpu_bound_task(num_elements):
+    """Generates num_elements random numbers and sums them up."""
+    data = np.random.randint(low=1, high=100, size=num_elements)
+    sum_result = np.sum(data)
+    return sum_result
+
+start_time = time.time()
+
+total_sum = cpu_bound_task(num_elements)
+
+end_time = time.time()
+
+
+print(end_time - start_time)

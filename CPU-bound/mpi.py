@@ -1,27 +1,48 @@
-from mpi4py import MPI
 import numpy as np
 import time
+from mpi4py import MPI
 
-def sum_random_numbers():
+def cpu_bound_task(data):
+    """Sum a segment of numbers."""
+    return np.sum(data)
+
+if __name__ == '__main__':
+    num_elements = 10000000  # 10 million elements
+
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()
     size = comm.Get_size()
 
     if rank == 0:
-        data = np.random.randint(low=1, high=100, size=1000000)
+        # Generate random data only on the root process
+        data = np.random.randint(low=1, high=100, size=num_elements)
+        start_time = time.time()
     else:
-        data = None
+        # Prepare a buffer for other processes
+        data = np.empty(num_elements, dtype='int')
 
-    data = comm.bcast(data, root=0)
-    local_sum = np.sum(data[rank * len(data) // size:(rank + 1) * len(data) // size])
+    # Divide data among processes
+    segment_size = num_elements // size
+    if rank == size - 1:
+        segment_size += num_elements % size  # Handle any remainder on the last process
 
-    total_sum = comm.reduce(local_sum, op=MPI.SUM, root=0)
+    # Scatter data to all processes
+    segment = np.empty(segment_size, dtype='int')
+    comm.Scatter([data, MPI.INT], [segment, MPI.INT], root=0)
+
+    # Each process performs its computation
+    local_sum = cpu_bound_task(segment)
+
+    # Gather all partial sums at the root process
+    if rank == 0:
+        all_sums = np.empty(size, dtype='int')
+    else:
+        all_sums = None
+
+    comm.Gather([np.array(local_sum, dtype='int'), MPI.INT], [all_sums, MPI.INT], root=0)
 
     if rank == 0:
+        total_sum = np.sum(all_sums)
         end_time = time.time()
-        print("Sum:", total_sum)
-        print("Time taken:", end_time - start_time, "seconds")
 
-if __name__ == "__main__":
-    start_time = time.time()
-    sum_random_numbers()
+        print((end_time - start_time) * 1000)
