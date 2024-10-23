@@ -1,34 +1,34 @@
 import numpy as np
 import time
-from multiprocessing import Process, Array
+from multiprocessing import Process, Array, Value
 
-def cpu_bound_task(shared_array, size, start_row, end_row):
-    """CPU-intensive task."""
-    matrix = np.frombuffer(shared_array.get_obj()).reshape((size, size))
-    # Example CPU-intensive operation: increase each element uniquely
-    for i in range(start_row, end_row):
-        for j in range(size):
-            matrix[i][j] += i * j  # or any other CPU-intensive operation
+def sum_segment(array, start, end, total):
+    local_sum = sum(array[start:end])
+    with total.get_lock():
+        total.value += local_sum
 
-if __name__ == '__main__':
-    matrix_size = 500
-    start_time = time.time()
-    result = Array('d', matrix_size * matrix_size)
-    result_matrix = np.frombuffer(result.get_obj()).reshape((matrix_size, matrix_size))
-    np.random.seed(0)
-    result_matrix[:] = np.random.rand(matrix_size, matrix_size)
-
+def sum_random_numbers():
+    data = np.random.randint(low=1, high=100, size=1000000)
+    num_processes = 4
+    total = Value('i', 0)
+    segment_size = len(data) // num_processes
     processes = []
-    rows_per_process = matrix_size // 4
-    for i in range(4):
-        start_row = i * rows_per_process
-        end_row = (i + 1) * rows_per_process if i < 3 else matrix_size
-        p = Process(target=cpu_bound_task, args=(result, matrix_size, start_row, end_row))
+
+    start_time = time.time()
+
+    for i in range(num_processes):
+        start = i * segment_size
+        end = (i + 1) * segment_size if i < num_processes - 1 else len(data)
+        p = Process(target=sum_segment, args=(data, start, end, total))
         processes.append(p)
         p.start()
 
     for p in processes:
         p.join()
 
-    elapsed_time = time.time() - start_time
-    print(elapsed_time)
+    end_time = time.time()
+    print("Sum:", total.value)
+    print("Time taken:", end_time - start_time, "seconds")
+
+if __name__ == '__main__':
+    sum_random_numbers()
