@@ -85,7 +85,7 @@ class RunnerConfig:
         """Perform any activity required before starting a run.
         No context is available here as the run is not yet active (BEFORE RUN)"""
         
-        pass
+        time.sleep(60) # cooldown period
 
     def start_run(self, context: RunnerContext) -> None:
         """Perform any activity required for starting the run here.
