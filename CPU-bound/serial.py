@@ -7,7 +7,7 @@ def sum_random_numbers():
     total_sum = np.sum(data)
     end_time = time.time()
     print("Sum:", total_sum)
-    print("Time taken:", end_time - start_time, "seconds")
+    print((time.time() - start_time)*1000)
 
 if __name__ == '__main__':
     sum_random_numbers()

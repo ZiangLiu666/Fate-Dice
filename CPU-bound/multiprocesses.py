@@ -28,7 +28,7 @@ def sum_random_numbers():
 
     end_time = time.time()
     print("Sum:", total.value)
-    print("Time taken:", end_time - start_time, "seconds")
+    print((end_time - start_time)*1000)
 
 if __name__ == '__main__':
     sum_random_numbers()

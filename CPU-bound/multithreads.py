@@ -16,7 +16,7 @@ def sum_random_numbers():
         total_sum = sum(f.result() for f in futures)
 
     print("Sum:", total_sum)
-    print("Time taken:", time.time() - start_time, "seconds")
+    print((time.time() - start_time)*1000)
 
 if __name__ == '__main__':
     start_time = time.time()
