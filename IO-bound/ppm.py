@@ -57,8 +57,11 @@ def parallel_io(input_folder, output_folder, num_processes=4):
 
     # Wait for jobs to finish and collect results
     for file_name, job in jobs:
-        result = job()  # Block until job finishes
-        print(f"Job for {result} completed.")
+        try:
+            result = job()  # Block until job finishes
+            print(f"Job for {result} completed.")
+        except Exception as e:
+            print(f"Error occurred while processing {file_name}: {e}")
 
     # Shut down the job server
     job_server.print_stats()

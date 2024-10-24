@@ -10,7 +10,7 @@ def generate_file(file_name, size_in_mb):
             f.write(line + '\n')
 
 # Create multiple files in the input folder
-def create_files(num_files=50, file_size=200):
+def create_files(num_files=20, file_size=50):
     # Get the directory of the current script
     script_dir = os.path.dirname(os.path.abspath(__file__))
     
