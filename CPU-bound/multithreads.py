@@ -33,4 +33,4 @@ total_sum = sum(results)
 
 end_time = time.time()
 
-print(end_time - start_time)
+print((end_time - start_time) * 1000)
