@@ -72,7 +72,7 @@ class RunnerConfig:
         technique_factor = FactorModel("technique", ['multithreads', 'multiprocesses', 'ppm', 'mpi'])
         self.run_table_model = RunTableModel(
             factors=[technique_factor],
-            repetitions=1,
+            repetitions=30,
             data_columns=['total_energy', 'execution_time', 'cpu_user_time', 'cpu_system_time', 'cpu_iowait_time',
                           'mem_usage']
         )
@@ -88,7 +88,7 @@ class RunnerConfig:
         """Perform any activity required before starting a run.
         No context is available here as the run is not yet active (BEFORE RUN)"""
 
-        pass
+        time.sleep(15)  # cooldown period
 
     def start_run(self, context: RunnerContext) -> None:
         """Perform any activity required for starting the run here.
