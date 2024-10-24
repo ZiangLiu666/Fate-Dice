@@ -1,22 +1,37 @@
-import numpy as np
-import pp
+import random
 import time
+import pp
 
-def sum_segment(data):
-    return sum(data)
+# 定义一个函数，用于在一个任务中生成随机数并计算它们的总和
+def add_random_numbers(count):
+    return sum(random.random() for _ in range(count))
 
-def sum_random_numbers():
-    data = np.random.randint(low=1, high=100, size=100000000)
-    num_processes = 4
-    job_server = pp.Server(num_processes)
-    segment_size = len(data) // num_processes
+def main():
+    # 进程数量
+    job_count = 4
+    # 每个任务处理的随机数数量
+    numbers_per_job = 10000 // job_count
 
     start_time = time.time()
 
-    jobs = [job_server.submit(sum_segment, (data[i * segment_size:(i + 1) * segment_size],), modules=('numpy',)) for i in range(num_processes)]
-    total_sum = sum(job() for job in jobs)
+    # 创建 job server
+    job_server = pp.Server(ncpus=job_count)
 
-    print((time.time() - start_time)*1000)
+    # 提交任务到 job server
+    jobs = [job_server.submit(add_random_numbers, (numbers_per_job,), (), ('random',)) for _ in range(job_count)]
+
+    # 等待所有任务完成并收集结果
+    results = [job() for job in jobs]
+
+    # 计算总和
+    total_sum = sum(results)
+
+    end_time = time.time()
+
+    print((end_time - start_time) * 1000)
+
+    # 关闭 job server
+    job_server.destroy()
 
 if __name__ == '__main__':
-    sum_random_numbers()
+    main()
