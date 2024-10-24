@@ -10,7 +10,7 @@ def add_random_numbers(count, result, index):
 # 线程数量
 thread_count = 4
 # 每个线程处理的随机数数量
-numbers_per_thread = 10000 // thread_count
+numbers_per_thread = 80000000 // thread_count
 
 # 存储每个线程结果的列表
 results = [0] * thread_count

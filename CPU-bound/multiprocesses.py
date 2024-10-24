@@ -10,7 +10,7 @@ def main():
     # 进程数量
     process_count = 4
     # 每个进程处理的随机数数量
-    numbers_per_process = 10000 // process_count
+    numbers_per_process = 80000000 // process_count
 
     start_time = time.time()
 

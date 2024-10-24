@@ -8,7 +8,7 @@ def add_random_numbers(count):
 
 def main():
     job_count = 4
-    numbers_per_job = 10000 // job_count
+    numbers_per_job = 80000000 // job_count
 
     start_time = time.time()
 
@@ -22,8 +22,7 @@ def main():
 
     end_time = time.time()
 
-    print("Total sum of 10000 random numbers:", total_sum)
-    print("Time taken in milliseconds:", (end_time - start_time) * 1000)
+    print((end_time - start_time))
 
     job_server.destroy()
 

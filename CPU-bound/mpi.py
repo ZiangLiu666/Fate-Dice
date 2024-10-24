@@ -11,7 +11,7 @@ def main():
         start_time = time.time()
 
     # 总随机数的数量
-    total_numbers = 10000
+    total_numbers = 80000000
     numbers_per_process = total_numbers // size
 
     # 每个进程生成它的随机数并计算它们的总和
