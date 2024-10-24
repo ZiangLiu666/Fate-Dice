@@ -1,7 +1,7 @@
 import numpy as np
 import time
 
-num_elements = 10000000  # 10 million elements
+num_elements = 100000000  # 10 million elements
 
 def cpu_bound_task(num_elements):
     """Generates num_elements random numbers and sums them up."""

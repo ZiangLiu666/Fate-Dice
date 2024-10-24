@@ -10,7 +10,7 @@ def cpu_bound_task(start_index, end_index):
         global total_sum
         total_sum += segment_sum
 
-num_elements = 10000000  # 10 million elements
+num_elements = 100000000  # 10 million elements
 data = np.random.randint(low=1, high=100, size=num_elements)
 total_sum = 0
 thread_lock = threading.Lock()  # A lock to manage access to the total_sum

@@ -6,7 +6,7 @@ def sum_segment(data):
     return sum(data)
 
 def sum_random_numbers():
-    data = np.random.randint(low=1, high=100, size=10000000)
+    data = np.random.randint(low=1, high=100, size=100000000)
     num_processes = 4
     job_server = pp.Server(num_processes)
     segment_size = len(data) // num_processes

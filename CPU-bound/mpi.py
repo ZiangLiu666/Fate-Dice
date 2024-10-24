@@ -7,7 +7,7 @@ def cpu_bound_task(data):
     return np.sum(data)
 
 if __name__ == '__main__':
-    num_elements = 10000000  # 10 million elements
+    num_elements = 100000000  # 10 million elements
 
     comm = MPI.COMM_WORLD
     rank = comm.Get_rank()

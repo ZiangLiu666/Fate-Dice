@@ -10,7 +10,7 @@ def cpu_bound_task(data, start_index, end_index):
         data[0] += segment_sum  # Accumulate results in the first element of the array
 
 if __name__ == '__main__':
-    num_elements = 10000000  # 10 million elements
+    num_elements = 100000000  # 10 million elements
     start_time = time.time()
 
     data = Array('i', num_elements + 1)  # Extra element for the result
