@@ -14,8 +14,6 @@ def main():
     total_numbers = 10000
     numbers_per_process = total_numbers // size
 
-    start_time = MPI.Wtime() if rank == 0 else None
-
     # 每个进程生成它的随机数并计算它们的总和
     subtotal = sum(random.random() for _ in range(numbers_per_process))
 
