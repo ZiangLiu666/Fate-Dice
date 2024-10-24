@@ -1,46 +1,27 @@
-# mpirun -np 4 python3 mpi.py
-
-import numpy as np
-import time
 from mpi4py import MPI
+import time
 
-start_time = 0
-end_time = 0
+def read_and_write_file(file_path):
+    for i in range(100):
+        with open(file_path, 'r') as file:
+            content = file.read()
+        with open(file_path, 'w') as file:
+            file.write(content)
 
-def memory_bound_task(matrix):
-    rows, cols = matrix.shape
-    for i in range(rows):
-        for j in range(cols):
-            matrix[i][j] *= 1.01
+file_paths = ['test0.txt', 'test1.txt', 'test2.txt', 'test3.txt']
 
-if __name__ == '__main__':
-    matrix_size = 4800
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
+size = comm.Get_size()
 
-    comm = MPI.COMM_WORLD
-    rank = comm.Get_rank()
-    size = comm.Get_size()
+start_time = time.time() if rank == 0 else None
 
-    if rank == 0:
-        matrix = np.random.rand(matrix_size, matrix_size)
-        start_time = time.time()
-    else:
-        matrix = np.empty((matrix_size, matrix_size), dtype='d')
+for i in range(rank, len(file_paths), size):
+    read_and_write_file(file_paths[i])
 
-    comm.Bcast(matrix, root=0)
+comm.Barrier()
 
-    rows_per_process = matrix_size // size
-    start_row = rank * rows_per_process
-    end_row = (rank + 1) * rows_per_process if rank < size - 1 else matrix_size
+end_time = time.time() if rank == 0 else None
 
-    memory_bound_task(matrix[start_row:end_row])
-
-    if rank == 0:
-        for i in range(1, size):
-            comm.Recv(matrix[i * rows_per_process:(i + 1) * rows_per_process], source=i)
-        end_time = time.time()
-    else:
-        comm.Send(matrix[start_row:end_row], dest=0)
-
-    if rank == 0:
-        print((end_time - start_time)*1000)
-
+if rank == 0:
+    print((end_time - start_time) * 1000)

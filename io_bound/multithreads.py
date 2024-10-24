@@ -12,6 +12,8 @@ def read_and_write_file(file_path):
 
 file_paths = ['test0.txt', 'test1.txt', 'test2.txt', 'test3.txt']
 
+start_time = time.time()
+
 threads = []
 for file in file_paths:
     thread = threading.Thread(target=read_and_write_file, args=(file,))
@@ -20,3 +22,7 @@ for file in file_paths:
 
 for thread in threads:
     thread.join()
+
+end_time = time.time
+
+print((end_time - start_time) * 1000)

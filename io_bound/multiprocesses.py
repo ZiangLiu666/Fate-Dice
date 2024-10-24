@@ -1,40 +1,26 @@
-import numpy as np
+import multiprocessing
 import time
-from multiprocessing import Process, Array
 
-matrix_size = 4800
+def read_and_write_file(file_path):
+    for i in range(100):
+        with open(file_path, 'r') as file:
+            content = file.read()
+        with open(file_path, 'w') as file:
+            file.write(content)
 
-def memory_bound_task(matrix, start_row, end_row):
-    matrix_np = np.frombuffer(matrix.get_obj()).reshape((matrix_size, matrix_size))
-    rows, cols = matrix_np.shape
-    
-    for i in range(start_row, end_row):
-        for j in range(cols):
-            matrix_np[i][j] *= 1.01
+file_paths = ['test0.txt', 'test1.txt', 'test2.txt', 'test3.txt']
 
-if __name__ == '__main__':
-    start_time = time.time()
+start_time = time.time()
 
-    matrix = Array('d', matrix_size * matrix_size)
-    matrix_np = np.frombuffer(matrix.get_obj()).reshape((matrix_size, matrix_size))
+processes = []
+for file in file_paths:
+    process = multiprocessing.Process(target=read_and_write_file, args=(file,))
+    processes.append(process)
+    process.start()
 
-    np.random.seed(0)
-    matrix_np[:] = np.random.rand(matrix_size, matrix_size)
+for process in processes:
+    process.join()
 
-    processes = []
-    num_processes = 4
-    rows_per_process = matrix_size // num_processes
+end_time = time.time
 
-    for i in range(num_processes):
-        start_row = i * rows_per_process
-        end_row = (i + 1) * rows_per_process if i < num_processes - 1 else matrix_size
-        process = Process(target=memory_bound_task, args=(matrix, start_row, end_row))
-        processes.append(process)
-        process.start()
-
-    for process in processes:
-        process.join()
-
-    end_time = time.time()
-
-    print((end_time - start_time)*1000)
+print((end_time - start_time) * 1000)
